@@ -1,7 +1,7 @@
 var game = new Phaser.Game(800, 800, Phaser.CANVAS, 'P2-Test', { preload: preload, create: create, update: update, render: render });
 
 function preload() { //Load sprites & collision polygons
-	game.load.image('gSquare', 'sprites/gSquare.png');
+	game.load.spritesheet('squareSheet', 'sprites/squareSheet.png', 32, 32, 2);
 }
 
 //Global Variables
@@ -15,7 +15,7 @@ function create() {
 	game.physics.startSystem(Phaser.Physics.P2JS); //Add P2 physics
 	game.physics.p2.defaultRestitution = .8; //This sets the default 'bounciness' of collisions
 	
-	square = game.add.sprite(400, 400, 'gSquare'); //Add sprite
+	square = game.add.sprite(400, 400, 'squareSheet', 0); //Add sprite
 	
 	//Input definitions
 	keys = game.input.keyboard.createCursorKeys();
@@ -33,11 +33,14 @@ function create() {
 
 function toggleSquare(pointer) {
 	//hitTest is used to check collision on a body and returns the body clicked on, or nothing if a blank space is clicked on
-	//The second argument can be an array of sprites or bodies that hitTest will check against
-	var clicked = game.physics.p2.hitTest(pointer.position, square);
+	//The second argument can be an array of sprites or bodies that hitTest will check against, otherwise hitTest will check against all bodies
+	var clicked = game.physics.p2.hitTest(pointer.position, [square]);
 	
-	if(clicked.length != 0) {
-		clicked = game.add.sprite(clicked.x, clicked.y, 'rSquare');
+	if(clicked[0].parent.sprite.frame == 0) {
+		clicked[0].parent.sprite.frame = 1;
+	}
+	else {
+		clicked[0].parent.sprite.frame = 0;
 	}
 }
 
@@ -53,7 +56,7 @@ function update() {
 			square.body.angularForce += 3;
 		}
 	}
-	if(space.isDown) {
+	if(space.isDown && square.frame == 0) {
 		square.body.thrust(250); //thrust(x) makes the object accelerate forwards (relative to its direction) up to a velocity of x pixels/second
 	}
 }
