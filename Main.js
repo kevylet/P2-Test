@@ -21,7 +21,7 @@ function create() {
 	keys = game.input.keyboard.createCursorKeys();
 	space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 	game.input.keyboard.addKeyCapture([keys, space]);
-	
+	game.input.onDown.add(toggleSquare, this);
 	
 	//Enable P2 physics for the object (this also enables physics for all of its children)
 	//By default, this will give the sprite a rectangular physics body the size of the sprite (which should be fine for modules)
@@ -29,6 +29,16 @@ function create() {
 	
 	square.body.damping = .75; //This value (from 0 to 1) determines the proportion of velocity lost per second
 	square.body.angularDamping = .9;  //Same but for angular velocity
+}
+
+function toggleSquare(pointer) {
+	//hitTest is used to check collision on a body and returns the body clicked on, or nothing if a blank space is clicked on
+	//The second argument can be an array of sprites or bodies that hitTest will check against
+	var clicked = game.physics.p2.hitTest(pointer.position, square);
+	
+	if(clicked.length != 0) {
+		clicked = game.add.sprite(clicked.x, clicked.y, 'rSquare');
+	}
 }
 
 function update() {
@@ -49,5 +59,5 @@ function update() {
 }
 
 function render() {
-	
+	//This could probably be useful for something
 }
