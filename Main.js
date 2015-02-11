@@ -2,12 +2,15 @@ var game = new Phaser.Game(800, 800, Phaser.CANVAS, 'P2-Test', { preload: preloa
 
 function preload() { //Load sprites & collision polygons
 	game.load.spritesheet('squareSheet', 'sprites/squareSheet.png', 32, 32, 2);
+	game.load.image('circle', 'sprites/asteroid.png');
 }
 
 //Global Variables
 var square;
 var keys;
 var space;
+var numRoids = 10; //Determines the number of asteroids
+var asteroidArr;
 
 function create() {
 	game.world.setBounds(0, 0, 800, 800);
@@ -16,6 +19,12 @@ function create() {
 	game.physics.p2.defaultRestitution = .8; //This sets the default 'bounciness' of collisions
 	
 	square = game.add.sprite(400, 400, 'squareSheet', 0); //Add sprite
+	asteroidArr = new Array();
+	for(i = 0; i < numRoids; i++) {
+		var asteroid = game.add.sprite(Math.random() * 800, Math.random() * 800, 'circle');
+		asteroidArr.push(asteroid);
+	}
+		
 	
 	//Input definitions
 	keys = game.input.keyboard.createCursorKeys();
@@ -26,9 +35,15 @@ function create() {
 	//Enable P2 physics for the object (this also enables physics for all of its children)
 	//By default, this will give the sprite a rectangular physics body the size of the sprite (which should be fine for modules)
 	game.physics.p2.enable(square);
+	for(i = 0; i < numRoids; i++) {
+		game.physics.p2.enable(asteroidArr[i]);
+		asteroidArr[i].body.setCircle(16); //Change the collision detection from an AABB to a circle
+		asteroidArr[i].body.angularDamping = 0;
+	}
 	
 	square.body.damping = .75; //This value (from 0 to 1) determines the proportion of velocity lost per second
-	square.body.angularDamping = .9;  //Same but for angular velocity
+	square.body.angularDamping = .90;  //Same but for angular velocity
+	
 }
 
 function toggleSquare(pointer) {
@@ -57,7 +72,7 @@ function update() {
 		}
 	}
 	if(space.isDown && square.frame == 0) {
-		square.body.thrust(250); //thrust(x) makes the object accelerate forwards (relative to its direction) up to a velocity of x pixels/second
+		square.body.thrust(300); //thrust(x) makes the object accelerate forwards (relative to its direction) up to a velocity of x pixels/second
 	}
 }
 
