@@ -16,7 +16,9 @@ function create() {
 	game.world.setBounds(0, 0, 800, 800);
 	
 	game.physics.startSystem(Phaser.Physics.P2JS); //Add P2 physics
-	game.physics.p2.defaultRestitution = .8; //This sets the default 'bounciness' of collisions
+	//The coefficient of restitution that determines how elastic/inelastic collisions are (1 being perfectly elastic, & 0 being completely inelastic)
+	//The effect of game.physics.p2.restitution is secondary to contact materials in a collision pair; something that we should be using moving forward
+	game.physics.p2.restitution = .5;
 	
 	square = game.add.sprite(400, 400, 'squareSheet', 0); //Add sprite
 	asteroidArr = new Array();
@@ -72,7 +74,10 @@ function update() {
 		}
 	}
 	if(space.isDown && square.frame == 0) {
-		square.body.thrust(300); //thrust(x) makes the object accelerate forwards (relative to its direction) up to a velocity of x pixels/second
+		//thrust(x) makes the object accelerate forwards (relative to its direction) up to a velocity of x pixels/second
+		//I'm not sure if P2 takes mass into account when translating thrust to velocity for an object, I'll have to check
+		//If not, we'll have to calculate thrust depending on number of number of modules & number of thrusters
+		square.body.thrust(300); 
 	}
 }
 
